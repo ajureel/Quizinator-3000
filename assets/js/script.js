@@ -1,26 +1,28 @@
-
 // set vars for doc elements
+// header elements including navigation and timer
 var headerEl = document.querySelector("header");
-var mainEl = document.querySelector("main");
 var navEl = document.querySelector("#nav");
 var timeDivEl = document.querySelector("#timeDiv");
+var viewHighScoresEl = document.querySelector("#viewHighScores");
+var timeEl = document.querySelector("#time");
+var countEl = document.querySelector("#count");
+
+// main content elements - where instructions and questions go
+var mainEl = document.querySelector("main");
 var instructionEl = document.querySelector("#instruction");
 var contentEl = document.querySelector("#content");
 var resultEl = document.querySelector("#result");
 
-
-
-var viewHighscoresEl = document.querySelector("#viewHighscores");
-var timeEl = document.querySelector("#time");
-var countEl = document.querySelector("#count");
-
 // set vars for game
 var activeQuizTitle = "";
 var activeQuestionsAry = [];
-const myDate = new Date(0);
+const myDate = new Date(0); //used for timer
+var timerOnBln = false; //used for timer
+var timePenalty = 0;
 var currentQuestionIdx = 0;
 
-
+// Helper functions
+//default instructions when starting a new quiz
 var instructionText = function(){
   return ("Try to answer the following " 
           + activeQuizTitle 
@@ -28,30 +30,32 @@ var instructionText = function(){
   );
 };
 
-
+//function to clear out the main content areas, common use: between questions
 var clearMain = function(){
    instructionEl.innerHTML = "";
    contentEl.innerHTML = "";
    resultEl.innerHTML = "";
 };
 
+//a function to test the layout
 var testMain = function(){
    instructionEl.innerHTML = "Hi";
    contentEl.innerHTML = "There";
    resultEl.innerHTML = "xoxo";
 };
 
+//let's go and run some stuff...
 testMain();
-// set up nav
+
 //check that questions are available, then add nav buttons
 // if (Array.isArray(window.codeQuestionsAry) && window.codeQuestionsAry.length > 1){
-if (window.codeQuestionsAry && (window.codeQuestionsAry.length > 0)){
+if (window.codeQuestionsAry && (window.codeQuestionsAry.length > 0)) {
   //console.log("here");
   var quizEl = document.createElement("button");
   quizEl.textContent = "Code Quiz";
-  navEl.appendChild(quizEl);  
+  navEl.appendChild(quizEl);
   quizEl.setAttribute("id", "codeBtn");
-  quizEl.addEventListener("click", function(){
+  quizEl.addEventListener("click", function () {
     activeQuizTitle = "Code Quiz";
     activeQuestionsAry = codeQuestionsAry;
     console.log(activeQuizTitle);
@@ -59,13 +63,13 @@ if (window.codeQuestionsAry && (window.codeQuestionsAry.length > 0)){
     introQuiz();
   });
 };
-if (window.xmasQuestionsAry && (window.xmasQuestionsAry.length > 0)){
- // console.log("here");
+if (window.xmasQuestionsAry && (window.xmasQuestionsAry.length > 0)) {
+  // console.log("here");
   var quizEl = document.createElement("button");
   quizEl.textContent = "Xmas Quiz";
-  navEl.appendChild(quizEl);  
+  navEl.appendChild(quizEl);
   quizEl.setAttribute("id", "xmasBtn");
-  quizEl.addEventListener("click", function(){
+  quizEl.addEventListener("click", function () {
     activeQuizTitle = "Xmas Quiz";
     activeQuestionsAry = xmasQuestionsAry;
     console.log(activeQuizTitle);
@@ -74,38 +78,22 @@ if (window.xmasQuestionsAry && (window.xmasQuestionsAry.length > 0)){
   });
 };
 
-
-
-
-
-// for (var i = 0; i < window.codeQuestionsAry.length; i++) {
-//   // This statement will run each time the loop is executed
-//   console.log('Question: ' + window.codeQuestionsAry[i].question);
-// }
-
-// console.log("here2" + window.codeQuestionsAry + window.codeQuestionsAry.length);
-// var myObj = window.codeQuestionsAry[0];
-// var myQuestion = myObj.question.toString();
-// // console.log(window.questionsAry[1].question.toString());
-// console.log(myQuestion);
-// console.log(myObj.question.toString());
-
-
-// launch quiz
+// launch quiz - this runs when a user clicks the button, thus deciding which quiz to launch.
 var introQuiz = function() {
   console.log("start quiz");
   clearMain();
-  // instructionEl.innerHTML = "";
-  // contentEl.innerHTML = "";
-  // resultEl.innerHTML = "";
+
+  // populate the quiz title
   var titleEl = document.createElement("H1");
   titleEl.textContent = activeQuizTitle + " Challenge!";
   instructionEl.appendChild(titleEl);  
 
+  // populate the quiz instructions
   var IntroEl = document.createElement("p");
   IntroEl.textContent = instructionText();
   contentEl.appendChild(IntroEl);  
   
+  // add a button to start the timer and load the first question
   var startTimerEl = document.createElement("button");
   startTimerEl.textContent = "Start Timer";
   contentEl.appendChild(startTimerEl);  
@@ -115,40 +103,15 @@ var introQuiz = function() {
   
 };
 
-// start timer
+// start timer and load the first question
 var startQuiz = function(){
   //load first question before starting the timer
   loadQuestion();
   startTimer();
- 
- 
-  // if (myDate.getSeconds().toString() == "2"){
-  //    console.log("TWO");
-  //   };
-
-  // if (myDate.getSeconds() == "3"){
-  //   for (var i = 0; i < activeQuestionsAry.length; i++) {
-  //     console.log('Question: ' + activeQuestionsAry[i].question);
-  //   }; 
-  // };
- 
-
-  // var msgInterval = setInterval(function () {
-  //   // If there are no more words left in the message
-  //   if (words[wordCount] === undefined) {
-  //     // Use `clearInterval()` to stop the timer
-  //     clearInterval(msgInterval);
-  //   } else {
-  //     // Display one word of the message
-  //     mainEl.textContent = words[wordCount];
-  //     wordCount++;
-  //   }
-  // }, 1000);
-
 };
 
 var loadQuestion = function () {
-  clearMain();
+  clearMain(); //clear out the prior content
 
   var questionEl = document.createElement("H2");
   questionEl.textContent = activeQuestionsAry[currentQuestionIdx].question;
@@ -173,9 +136,10 @@ var loadQuestion = function () {
     var brEl = document.createElement("br");
     answersEl.appendChild(brEl);
 
-    console.log('Question: ' + activeQuestionsAry[currentQuestionIdx].answerChoices[i]);
+    console.log('Choice: ' + activeQuestionsAry[currentQuestionIdx].answerChoices[i]);
   };
 
+  // add event listener for question - includes logic what to do if wrong answer or right answer
   answersEl.addEventListener("click", function () {
     resultEl.innerHTML = "";
     var outcomeEl = document.createElement("div")
@@ -188,81 +152,170 @@ var loadQuestion = function () {
       var nextEl = document.createElement("button");
       nextEl.textContent = "Next!";
       outcomeEl.appendChild(nextEl);
-      resultEl.addEventListener("click", function(){
-        loadQuestion();
+      if (currentQuestionIdx == activeQuestionsAry.length){
+        nextEl.setAttribute("nextQuestion", 0);
+        timerOnBln = false;
+      } else {
+        nextEl.setAttribute("nextQuestion", currentQuestionIdx);
+      };
+
+      nextEl.addEventListener("click", function(){
+        // need to check if last question
+        if (event.target.getAttribute("nextQuestion") === "0"){
+          endOfQuiz();
+        } else {
+        // else load the next question
+          loadQuestion();
+        };
       });
     } else {
       //else show WRONG!, increment wrong
-      outcomeEl.textContent = "Nope!"
+      outcomeEl.textContent = "Nope!";
+      timePenalty++;
+      console.log ("timePenalty: " + timePenalty);
     };
     resultEl.appendChild(outcomeEl); 
   });
-  // contentEl.appendChild(startTimerEl);  
-  // startTimerEl.addEventListener("click", function(){
-  //   startQuiz();
-
-
-  resultEl.innerHTML = "xoxo";
 
   currentQuestionIdx++;
 };
 
+var endOfQuiz = function(){
+  console.log("end of quiz");
+  // clean up some stuff
+  clearMain();
+  currentQuestionIdx = 0;
+  
+  // console log time
+  console.log ("time: " + myDate);
+  console.log ("penalty: " + timePenalty);
+  console.log ("scored time: " + (timePenalty * 10 + myDate.getSeconds()+(myDate.getMinutes()/60)));
+
+  //tally score
+  // score is time based.
+  var finalTime = (timePenalty * 10 + myDate.getSeconds()+(myDate.getMinutes()*60));
+  // max score is 5 for each question (you get 5 seconds to answer the question)
+  var perfectScore = activeQuestionsAry.length * 5;
+  // the only way to the end is to answer all questions correct, so score is always based on a perfect score minus overtime and penalties
+  // this also gives bonus score for finishing fast
+  var finalScore = perfectScore - (finalTime-perfectScore); 
+  console.log ("finalTime: " + finalTime);
+  console.log ("perfectScore: " + perfectScore);
+  console.log ("finalScore: " + finalScore);
+  
+
+  // all done
+   var titleEl = document.createElement("H1");
+   titleEl.textContent = "You've completed the " + activeQuizTitle + " Challenge!";
+   instructionEl.appendChild(titleEl);  
+ 
+   // Display result and get name for high score
+   var finalScoreEl = document.createElement("p");
+   finalScoreEl.textContent = "Your final score is " + finalScore;
+   contentEl.appendChild(finalScoreEl);  
+  // enter initials
+  var initialsPromptEl = document.createElement("p");
+  initialsPromptEl.textContent = "Enter your initials: ";
+  contentEl.appendChild(initialsPromptEl); 
+
+  var initialsInputEl = document.createElement("input");
+  initialsPromptEl.appendChild(initialsInputEl); 
+  initialsInputEl.setAttribute("id", "initials");
+
+  // add a submit button  
+  var initialsButtonEl = document.createElement("button");
+  initialsButtonEl.textContent = "Submit";
+  resultEl.appendChild(initialsButtonEl); 
+  initialsButtonEl.addEventListener("click", function () {
+    var myInitials = initialsInputEl.value;
+    //add to high scores
+    var highScoresAry= [];
+    if(localStorage.getItem("HighScores") !== null){
+      highScoresAry = highScoresAry.concat(JSON.parse(localStorage.getItem("HighScores")));
+    };
+            
+    highScoresAry.push(
+      {
+        "user": myInitials,
+        "quiz": activeQuizTitle,
+        "score": finalScore
+    });
+
+    // put updated scores in local storage
+    localStorage.setItem("HighScores", JSON.stringify(highScoresAry));
+      
+        console.log("local storage set");
+      // go to high scores
+      highScores();
+  });
+
+};
+
+//display high scores
+var highScores = function(){
+  clearMain();
+  var highScoresAry= [];
+  if(localStorage.getItem("HighScores") !== null){
+    highScoresAry = highScoresAry.concat(JSON.parse(localStorage.getItem("HighScores")));
+  };
+   // populate the title
+   var titleEl = document.createElement("H1");
+   titleEl.textContent = "High Scores!";
+   instructionEl.appendChild(titleEl);  
+ 
+   // populate the quiz instructions
+   var scoreListEl = document.createElement("ol");
+   contentEl.appendChild(scoreListEl);  
+
+   console.log("highScores length: " + Object.keys(highScoresAry).length);
+   var myAryLength = Object.keys(highScoresAry).length;
+
+  for (i=0; i<myAryLength; i++){
+    var scoreItemEl = document.createElement("li");
+    scoreListEl.appendChild(scoreItemEl);
+    scoreItemEl.textContent = highScoresAry[i].user + " " + highScoresAry[i].quiz  + " " + highScoresAry[i].score; 
+  };
+
+  // Exit
+  var myExitBtn = document.createElement("button");
+  resultEl.appendChild(myExitBtn);
+  myExitBtn.textContent = "Exit High Scores";
+  myExitBtn.addEventListener("click", function () {
+    clearMain();
+  });
+
+  // clear scores
+  var myClearBtn = document.createElement("button");
+  resultEl.appendChild(myClearBtn);
+  myClearBtn.textContent = "Remove High Scores";
+
+  myClearBtn.addEventListener("click", function () {
+    localStorage.removeItem("HighScores");
+    highScores();
+  });
+
+
+};
+
+//add listener for nav to display high scores
+viewHighScoresEl.addEventListener("click", function () {
+  highScores();
+});
+
+//Timer function starts the clock interval displaying the clock (and checking when to end the clock)
 var startTimer = function(){
+  timerOnBln = true;
+  timePenalty = 0;
   myDate.setTime(0);
   myDate.setHours(0);
   const myInterval = setInterval(function(){
     myDate.setSeconds(myDate.getSeconds() + 1);
    timeEl.textContent = myDate.getHours() + ":" + myDate.getMinutes() + ":" + myDate.getSeconds();
-   console.log(myDate.getSeconds());
-  //  if (myDate.getSeconds().toString() === "5"){
-  if (myDate.getSeconds().toString() == activeQuestionsAry.length){
-      // console.log("IF");
+
+  //  if the timer was turned off, then stop the interval
+ if (!timerOnBln){
+  //     // console.log("IF");
       clearInterval(myInterval);
       };
   }, 1000);
 };
-
-
-
-// function myTimer() {
-//   myDate.setSeconds(myDate.getSeconds() + 1);
-//   timeEl.textContent = myDate.getHours() + ":" + myDate.getMinutes() + ":" + myDate.getSeconds();
-//   console.log(myDate.getSeconds());
-//   // if (myDate.getSeconds().toString == "5"){
-//   //   clearInterval(myInterval);
-//   // };
-// };
-
-// iterate through questions
-// score 
-// get name for scoreboard/high scores
-
-
-
-
-
-
-// change to just include another script file that loads the questions into an object vs trying to read in the json file.
-
-// function myfetch()  {fetch("../json/codeQuestions.json")
-//   .then(response => response.json())
-//   .then(json => console.log(json));
-//   console.log ("here");
-// };
-
-// myfetch();
-// console.log ("hello");
-
-
-// fr = new FileReader();
-//       fr.onload = receivedText;
-//       fr.readAsText(file);
-    
-
-//     function receivedText(e) {
-//       let lines = e.target.result;
-//       var newArr = JSON.parse(lines); 
-//     }
-  
-
-

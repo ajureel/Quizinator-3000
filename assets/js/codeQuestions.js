@@ -1,3 +1,9 @@
+// create an array of code questions for the quiz
+// each question is an object comprised of 
+// 1. question Text
+// 2. array of answer choices 
+// 3. correct answer index value 
+
 var codeQuestionsAry = [
    {
       "question": ["Commonly used data types DO NOT include:"],
@@ -22,7 +28,7 @@ var codeQuestionsAry = [
      {
         "question": ["String values must be enclosed within ___ when being assigned to variables."],
         "answerChoices": ["Commas","Curly brackets","Quotes","Parentheses"],
-        "correctAnswerIndex": 3
+        "correctAnswerIndex": 2
      },
      {
         "question": ["A very useful tool used during development and debugging for printing content to the debugger is:"],
